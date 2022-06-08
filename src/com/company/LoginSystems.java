@@ -9,9 +9,11 @@ public class LoginSystems {
             int choice = InputSystems.InputInt("Login (1) or Sign up (0)?");
             if (choice == 1){
                 Login();
+                valid = true;
             }
             else if (choice == 0){
                 Signup();
+                valid = true;
             }
             else{
                 System.out.println("please enter a valid option");

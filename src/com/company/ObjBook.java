@@ -23,15 +23,7 @@ public class ObjBook {
 
     @Override
     public String toString() {
-        return "ObjBook{" +
-                "ISBN=" + ISBN +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
-                ", genre='" + genre + '\'' +
-                ", quantity=" + quantity +
-                ", quantityAvailable=" + quantityAvailable +
-                ", datePublished=" + datePublished +
-                '}';
+        return ISBN+"  |  "+title+"  |  "+author+"  |  "+genre+"  |  "+quantity+"  |  "+quantityAvailable+"  |  "+datePublished;
     }
 
     public int getISBN() {

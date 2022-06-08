@@ -27,17 +27,7 @@ public class ObjAccount {
 
     @Override
     public String toString() {
-        return "ObjAccount{" +
-                "username='" + username + '\'' +
-                ", password=" + password +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", dateCreated=" + dateCreated +
-                ", admin=" + admin +
-                ", accuntID=" + accountID +
-                '}';
+        return accountID+"  |  "+username+"  |  "+password+"  |  "+firstName+"  |  "+lastName+"  |  "+email+"  |  "+dateOfBirth+"  |  "+dateCreated+"  |  "+admin;
     }
 
     public String getUsername() {
