@@ -5,17 +5,19 @@ import java.time.LocalDate;
 
 public class DatabaseSystems {
 
-    public static void AmendBook(String field,int isbn){
-        try{
-            Class.forName(""); //enter database
-        }
-        catch (Exception e){
-            System.out.println("Class not found "+e);
-        }
+    public static void AmendInt(String table, String field, int ID, int amendment){
         try{
             Connection con = getConnection();
-            String amendment;
-            String sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+isbn;
+            String sql = "";
+            if (table.equalsIgnoreCase("Books")){
+                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+            }
+            else if (table.equalsIgnoreCase("Accounts")){
+                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+            }
+            else{
+
+            }
             ResultSet rs = executeQuery(con,sql);
             if (rs.next()){
             }
@@ -26,32 +28,78 @@ public class DatabaseSystems {
         }
     }
 
-    //public static void AmendAccount(String field,int accountID){
-        //try{
-            //Class.forName(""); //enter database
-        //}
-        //catch (Exception e){
-            //System.out.println("Class not found "+e);
-       // }
-        //try{
-           // Connection con = DriverManager.getConnection(""); // enter database
-           // Statement stmt = con.createStatement("SELECT "+field+" FROM Accounts WHERE ");
-            //finish
-       // }
-       // catch(Exception e){
+    public static void AmendString(String table, String field,int ID, String amendment){
+        try{
+            Connection con = getConnection();
+            String sql = "";
+            if (table.equalsIgnoreCase("Books")){
+                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+            }
+            else if (table.equalsIgnoreCase("Accounts")){
+                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+            }
+            else{
 
-       // }
-   // }
+            }
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+            }
+            //finish
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    public static void AmendBoolean(String table, String field,int ID, boolean amendment){
+        try{
+            Connection con = getConnection();
+            String sql = "";
+            if (table.equalsIgnoreCase("Books")){
+                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+            }
+            else if (table.equalsIgnoreCase("Accounts")){
+                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+            }
+            else{
+
+            }
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+            }
+            //finish
+        }
+        catch(Exception e){
+
+        }
+    }
+
+    public static void AmendDate(String table, String field,int ID, LocalDate amendment){
+        try{
+            Connection con = getConnection();
+            String sql = "";
+            if (table.equalsIgnoreCase("Books")){
+                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+            }
+            else if (table.equalsIgnoreCase("Accounts")){
+                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+            }
+            else{
+
+            }
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+            }
+            //finish
+        }
+        catch(Exception e){
+
+        }
+    }
 
     public static void DisplayAccounts(){ // 0 = no search, 1 = AccountID, 2 = Username, 3 = FirstName, 4 = LastName, 5 = Email, 6 = DateOfBirth, 7  = DateCreated, 8 = Admin
         try{
-            Class.forName(""); //enter database
-        }
-        catch (Exception e){
-            System.out.println("Class not found "+e);
-        }
-        try{
-            Connection con = DriverManager.getConnection(""); // enter database
+            Connection con = getConnection();
             Statement stmt = con.createStatement();
 
             ResultSet rs = stmt.executeQuery("SELECT * FROM Accounts");
@@ -72,12 +120,6 @@ public class DatabaseSystems {
     }
 
     public static void DisplayBooks(){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
-        try{
-            Class.forName(""); //enter database
-        }
-        catch (Exception e){
-            System.out.println("Class not found "+e);
-        }
         try{
             Connection con = DriverManager.getConnection(""); // enter database
             Statement stmt = con.createStatement();
@@ -100,12 +142,6 @@ public class DatabaseSystems {
 
     public static void DisplayLendings(){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
         try{
-            Class.forName(""); //enter database
-        }
-        catch (Exception e){
-            System.out.println("Class not found "+e);
-        }
-        try{
             Connection con = DriverManager.getConnection(""); // enter database
             Statement stmt = con.createStatement();
 
@@ -127,6 +163,73 @@ public class DatabaseSystems {
         catch(Exception e){
 
         }
+    }
+
+    public static ObjBook getBook(int isbn){
+        ObjBook myBook = null;
+        try{
+            Connection con = getConnection();
+
+            String sql = "SELECT * FROM Books WHERE ISBN = "+isbn;
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+                myBook = new ObjBook(rs.getInt("ISBN"),rs.getString("Title"),rs.getString("Author"),rs.getString("Genre"),rs.getInt("Quantity"), rs.getInt("QuantityAvailable"), rs.getDate("DatePublished").toLocalDate());
+            }
+            rs.close();
+            con.close();
+        }
+        catch (Exception e){
+
+        }
+        return myBook;
+    }
+
+    public static boolean CheckUsernameAvailable(String username){
+        boolean valid = true;
+        try{
+            Connection con = getConnection();
+            String sql = "SELECT Username FROM Accounts";
+            ResultSet rs = executeQuery(con,sql);
+            while (rs.next()){
+                String check = rs.getString("Username");
+                if (check.equals(username)){
+                    valid = false;
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+        return valid;
+    }
+
+    public static void AddUser(String username, int password, String firstname, String lastname, LocalDate DoB, String email, LocalDate datecreated, boolean admin){
+        try{
+            Connection con = getConnection();
+            String sql = "SELECT Accounts.* FROM Accounts";
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+                rs.moveToInsertRow();
+                rs.updateString("Username",username);
+                rs.updateInt("Password",password);
+                rs.updateString("FirstName",firstname);
+                rs.updateString("LastName",lastname);
+                rs.updateDate("DateOfBirth",Date.valueOf(DoB));
+                rs.updateString("Email",email);
+                rs.updateDate("DateCreated",Date.valueOf(datecreated));
+                rs.updateBoolean("Admin",admin);
+                rs.insertRow();
+            }
+            con.close();
+            System.out.println("sign up successful");
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+    }
+
+    public static void AddBook(){
+
     }
 
     // Julie's code bellow

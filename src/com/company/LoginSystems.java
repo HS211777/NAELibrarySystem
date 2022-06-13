@@ -21,14 +21,16 @@ public class LoginSystems {
         }
     }
 
-    private static void Login(){
+    private static ObjAccount Login(){
         boolean valid = false;
+        ObjAccount myAccount = null;
         while (!valid){
             String username = InputSystems.InputString("Enter Username:");
             String password = InputSystems.InputString("Enter Password:");
             // check username and password
             valid = true;
         }
+        return myAccount;
     }
 
     private static void Signup(){
@@ -46,10 +48,14 @@ public class LoginSystems {
             int day = InputSystems.InputInt("Enter the day (1-31) of your birth");
             LocalDate dateOfBirth = LocalDate.of(year,month,day);
             if (password.equals(confPassword)){
-                //check username
-                //check date of birth
-                //store data in database
+                int hashpassword = password.hashCode();
+                if (DatabaseSystems.CheckUsernameAvailable(username)){
+                    if (dateOfBirth.isBefore(LocalDate.now())){
+                        DatabaseSystems.AddUser(username,hashpassword,firstName,lastName,dateOfBirth,email,dateCreated,false);
+                    }
+                }
             }
+            valid = true;
         }
     }
 }
