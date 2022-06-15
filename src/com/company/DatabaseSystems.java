@@ -97,12 +97,42 @@ public class DatabaseSystems {
         }
     }
 
-    public static void DisplayAccounts(){ // 0 = no search, 1 = AccountID, 2 = Username, 3 = FirstName, 4 = LastName, 5 = Email, 6 = DateOfBirth, 7  = DateCreated, 8 = Admin
+    public static void DisplayAccounts(int searchby){ // 0 = no search, 1 = Username, 2 = FirstName, 3 = LastName, 4 = Email, 5 = DateOfBirth, 6  = DateCreated, 7 = Admin
         try{
             Connection con = getConnection();
-            Statement stmt = con.createStatement();
+            String sqladd = "";
+            if (searchby == 1){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE Username LIKE '"+search+"'";
+            }
+            else if (searchby == 2){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE FirstName LIKE '"+search+"'";
+            }
+            else if (searchby == 3){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE LastName LIKE '"+search+"'";
+            }
+            else if (searchby == 4){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE Email LIKE '"+search+"'";
+            }
+            else if (searchby == 5){
+                LocalDate search1 = InputSystems.InputDate();
+                Date search = Date.valueOf(search1);
+                sqladd = " WHERE DateOfBirth = "+search;
+            }
+            else if (searchby == 6){
+                LocalDate search1 = InputSystems.InputDate();
+                Date search = Date.valueOf(search1);
+                sqladd = " WHERE DateCreated = "+search;
+            }
+            else if (searchby == 7){
+                sqladd = " WHERE Admin LIKE "+search;
+            }
 
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Accounts");
+            String sql = "SELECT * FROM Accounts";
+            ResultSet rs = executeQuery(con,sql);
             //add search
 
             System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
@@ -184,6 +214,23 @@ public class DatabaseSystems {
         return myBook;
     }
 
+    public static ObjAccount getUser(int accountid){
+        ObjAccount myAccount = null;
+        try{
+            Connection con = getConnection();
+
+            String sql = "SELECT * FROM Accounts WHERE AccountID = "+accountid;
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+                myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"),rs.getString("LastName"),rs.getString("Email"), rs.getDate("DateOfBirth").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"), rs.getInt("AccountID"));
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+        return myAccount;
+    }
+
     public static boolean CheckUsernameAvailable(String username){
         boolean valid = true;
         try{
@@ -230,6 +277,26 @@ public class DatabaseSystems {
 
     public static void AddBook(){
 
+    }
+
+    public static int checkLogin(String username, int password){
+        int out = -1;
+        try{
+            Connection con = getConnection();
+            String sql = "SELECT Username, Password, AccountID FROM Accounts;";
+            ResultSet rs = executeQuery(con, sql);
+
+            while(rs.next()){
+                if (username.equals(rs.getString("Username")) || password == rs.getInt("Password")){
+                    out = rs.getInt("AccountID");
+                    break;
+                }
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+        return out;
     }
 
     // Julie's code bellow

@@ -3,6 +3,7 @@ package com.company;
 import java.time.LocalDate;
 
 public class LoginSystems {
+    private static ObjAccount currentAccount;
     public static void LoginMenu(){
         boolean valid = false;
         while (!valid){
@@ -21,16 +22,24 @@ public class LoginSystems {
         }
     }
 
-    private static ObjAccount Login(){
+    private static void Login(){
         boolean valid = false;
         ObjAccount myAccount = null;
         while (!valid){
             String username = InputSystems.InputString("Enter Username:");
             String password = InputSystems.InputString("Enter Password:");
-            // check username and password
-            valid = true;
+            int hpassword = password.hashCode();
+            int accountID = DatabaseSystems.checkLogin(username, hpassword);
+            if (accountID != -1){
+                valid = true;
+                myAccount = DatabaseSystems.getUser(accountID);
+                System.out.println("login successful");
+            }
+            else{
+                System.out.println("Invalid username or password");
+            }
         }
-        return myAccount;
+        currentAccount = myAccount;
     }
 
     private static void Signup(){
@@ -57,5 +66,9 @@ public class LoginSystems {
             }
             valid = true;
         }
+    }
+
+    public static ObjAccount getCurrentAccount(){
+        return currentAccount;
     }
 }
