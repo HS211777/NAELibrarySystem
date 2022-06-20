@@ -3,6 +3,7 @@ package com.company;
 import javafx.util.converter.LocalDateStringConverter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class AdminUserSystems {
 
@@ -58,13 +59,13 @@ public class AdminUserSystems {
         while(!valid){
             System.out.println("    --Menu--");
             System.out.println("1 - Amend Book");
-            System.out.println("2 - Amend User");
+            System.out.println("2 - Amend Account");
             System.out.println("3 - Delete Book");
-            System.out.println("4 - Delete User");
+            System.out.println("4 - Delete Account");
             System.out.println("5 - View Book List");
-            System.out.println("6 - View User List");
+            System.out.println("6 - View Account List");
             System.out.println("7 - Search Books");
-            System.out.println("8 - Search Users");
+            System.out.println("8 - Search Accounts");
             System.out.println("9 - Add Book");
             System.out.println("10 - Exit");
             System.out.println();
@@ -82,13 +83,15 @@ public class AdminUserSystems {
                 //DeleteUser();
             }
             else if (choice == 5){
-                //ViewBookList();
+                ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));
+                //print arraylist
             }
             else if (choice == 6){
-                //ViewUserList();
+                ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(0));
+                //print arraylist
             }
             else if (choice == 7){
-                //SearchBooks();
+                SearchBooks();
             }
             else if (choice == 8){
                 //SearchUsers();
@@ -229,5 +232,163 @@ public class AdminUserSystems {
                 System.out.println("please enter a valid option");
             }
         }
+    }
+
+    public static void SearchBooks(){
+        boolean valid = false;
+        while (!valid){
+            System.out.println("   --Field--");
+            System.out.println("1 - Title");
+            System.out.println("2 - Author");
+            System.out.println("3 - Genre");
+            System.out.println("4 - DatePublished");
+            System.out.println("5 - Back");
+            int choice = InputSystems.InputInt("Enter option number: ");
+            if (choice < 1 || choice > 5){
+                System.out.println("please enter a valid option");
+            }
+            else if (choice == 5){
+                valid = true;
+            }
+            else{
+                valid = true;
+                ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(choice));
+                //print
+            }
+        }
+    }
+
+    public static void SearchAccounts(){
+        boolean valid = false;
+        while (!valid){
+            System.out.println("   --Field--");
+            System.out.println("1 - Username");
+            System.out.println("2 - Password");
+            System.out.println("3 - First Name");
+            System.out.println("4 - Last Name");
+            System.out.println("5 - Date of Birth");
+            System.out.println("6 - Email");
+            System.out.println("7 - Admin ");
+            System.out.println("8 - Back");
+
+            int choice = InputSystems.InputInt("Enter option number: ");
+            if (choice < 1 || choice > 8){
+                System.out.println("please enter a valid option");
+            }
+            else if (choice == 8){
+                valid = true;
+            }
+            else{
+                valid = true;
+                ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(choice));
+            }
+        }
+
+
+    }
+
+    public static ArrayList<ObjAccount> sortAccounts(ArrayList<ObjAccount> unsorted){
+        if (unsorted.size() <= 1){
+            return unsorted;
+        }
+        int mid = (int) Math.floor(unsorted.size()/2);
+        ArrayList<ObjAccount> left = null;
+        for (int i = 0; i < mid; i++){
+            left.add(unsorted.get(i));
+        }
+        ArrayList<ObjAccount> right = null;
+        for (int i = mid; i < unsorted.size(); i++){
+            right.add(unsorted.get(i));
+        }
+        return mergeAccounts(sortAccounts(left),sortAccounts(right));
+    }
+
+    public static ArrayList<ObjAccount> mergeAccounts(ArrayList<ObjAccount> left, ArrayList<ObjAccount> right){
+        ArrayList<ObjAccount> resultArray = null;
+        int leftIndex = 0;
+        int rightIndex = 0;
+
+        while(leftIndex < left.size() && rightIndex < right.size()){
+            if(left.get(leftIndex).getAccountID() < right.get(rightIndex).getAccountID()){
+                resultArray.add(left.get(leftIndex));
+                leftIndex++;
+            }
+            else{
+                resultArray.add(right.get(rightIndex));
+                rightIndex++;
+            }
+        }
+
+        return resultArray;
+    }
+
+    public static ArrayList<ObjBook> sortBooks(ArrayList<ObjBook> unsorted){
+        if (unsorted.size() <= 1){
+            return unsorted;
+        }
+        int mid = (int) Math.floor(unsorted.size()/2);
+        ArrayList<ObjBook> left = null;
+        for (int i = 0; i < mid; i++){
+            left.add(unsorted.get(i));
+        }
+        ArrayList<ObjBook> right = null;
+        for (int i = mid; i < unsorted.size(); i++){
+            right.add(unsorted.get(i));
+        }
+        return mergeBooks(sortBooks(left),sortBooks(right));
+    }
+
+    public static ArrayList<ObjBook> mergeBooks(ArrayList<ObjBook> left, ArrayList<ObjBook> right){
+        ArrayList<ObjBook> resultArray = null;
+        int leftIndex = 0;
+        int rightIndex = 0;
+
+        while(leftIndex < left.size() && rightIndex < right.size()){
+            if(left.get(leftIndex).getISBN() < right.get(rightIndex).getISBN()){
+                resultArray.add(left.get(leftIndex));
+                leftIndex++;
+            }
+            else{
+                resultArray.add(right.get(rightIndex));
+                rightIndex++;
+            }
+        }
+
+        return resultArray;
+    }
+
+    public static ArrayList<ObjLendings> sortLendings(ArrayList<ObjLendings> unsorted){
+        if (unsorted.size() <= 1){
+            return unsorted;
+        }
+        int mid = (int) Math.floor(unsorted.size()/2);
+        ArrayList<ObjLendings> left = null;
+        for (int i = 0; i < mid; i++){
+            left.add(unsorted.get(i));
+        }
+        ArrayList<ObjLendings> right = null;
+        for (int i = mid; i < unsorted.size(); i++){
+            right.add(unsorted.get(i));
+        }
+        return mergeLendings(sortLendings(left),sortLendings(right));
+    }
+
+    public static ArrayList<ObjLendings> mergeLendings(ArrayList<ObjLendings> left, ArrayList<ObjLendings> right){
+        ArrayList<ObjLendings> resultArray = null;
+        int leftIndex = 0;
+        int rightIndex = 0;
+
+        while(leftIndex < left.size() && rightIndex < right.size()){
+            if(left.get(leftIndex).getLendingID() < right.get(rightIndex).getLendingID()){
+                resultArray.add(left.get(leftIndex));
+                leftIndex++;
+            }
+            else{
+                resultArray.add(right.get(rightIndex));
+                rightIndex++;
+            }
+        }
+
+        return resultArray;
     }
 }

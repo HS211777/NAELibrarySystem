@@ -2,6 +2,7 @@ package com.company;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class DatabaseSystems {
 
@@ -97,7 +98,8 @@ public class DatabaseSystems {
         }
     }
 
-    public static void DisplayAccounts(int searchby){ // 0 = no search, 1 = Username, 2 = FirstName, 3 = LastName, 4 = Email, 5 = DateOfBirth, 6  = DateCreated, 7 = Admin
+    public static ArrayList<ObjAccount> DisplayAccounts(int searchby){ // 0 = no search, 1 = Username, 2 = FirstName, 3 = LastName, 4 = Email, 5 = DateOfBirth, 6  = DateCreated, 7 = Admin
+        ArrayList<ObjAccount> array = null;
         try{
             Connection con = getConnection();
             String sqladd = "";
@@ -128,28 +130,31 @@ public class DatabaseSystems {
                 sqladd = " WHERE DateCreated = "+search;
             }
             else if (searchby == 7){
+                boolean search = InputSystems.InputBoolean("Search: ");
                 sqladd = " WHERE Admin LIKE "+search;
             }
 
             String sql = "SELECT * FROM Accounts";
-            ResultSet rs = executeQuery(con,sql);
+            String sql1 = sql + sqladd;
+            ResultSet rs = executeQuery(con,sql1);
             //add search
 
             System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
 
             while (rs.next()){
                 ObjAccount myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Email"), rs.getDate("DateOfBirth#").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"),rs.getInt("AccountID"));
-
-                System.out.println(myAccount.toString());
+                array.add(myAccount);
             }
 
         }
         catch(Exception e){
 
         }
+        return array;
     }
 
-    public static void DisplayBooks(){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
+    public static ArrayList<ObjBook> DisplayBooks(int search){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
+        ArrayList<ObjBook> array = null;
         try{
             Connection con = DriverManager.getConnection(""); // enter database
             Statement stmt = con.createStatement();
@@ -161,16 +166,17 @@ public class DatabaseSystems {
 
             while (rs.next()){
                 ObjBook myBook = new ObjBook(rs.getInt("ISBN"),rs.getString("Title"),rs.getString("Author"),rs.getString("Genre"),rs.getInt("Quantity"),rs.getInt("QuantityAvailable"),rs.getDate("DatePublished").toLocalDate());
-
-                System.out.println(myBook.toString());
+                array.add(myBook);
             }
         }
         catch(Exception e){
 
         }
+        return array;
     }
 
-    public static void DisplayLendings(){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
+    public static ArrayList<ObjLendings> DisplayLendings(){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
+        ArrayList<ObjLendings> array = null;
         try{
             Connection con = DriverManager.getConnection(""); // enter database
             Statement stmt = con.createStatement();
@@ -181,18 +187,14 @@ public class DatabaseSystems {
             System.out.println("LendingID  |  AccountID  |  ISBN  |  DateLent  |  ReturnDate");
 
             while (rs.next()){
-                int LenginID = rs.getInt("LenginID");
-                int AccountID = rs.getInt("AccountID");
-                int ISBN = rs.getInt("ISBN");
-                Date DateLent = rs.getDate("DateLent");
-                Date ReturnDate = rs.getDate("ReturnDate");
-
-                System.out.println(LenginID+"  |  "+AccountID+"  |  "+ISBN+"  |  "+DateLent+"  |  "+ReturnDate);
+                ObjLendings myLending = new ObjLendings(rs.getInt("LendingID"),rs.getInt("AccountID"),rs.getInt("DateLent"),rs.getDate("DateLent").toLocalDate(), rs.getDate("ReturnDate").toLocalDate());
+                array .add(myLending);
             }
         }
         catch(Exception e){
 
         }
+        return array;
     }
 
     public static ObjBook getBook(int isbn){
