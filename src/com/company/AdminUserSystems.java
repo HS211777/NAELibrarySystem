@@ -25,13 +25,15 @@ public class AdminUserSystems {
                 AmendUser();
             }
             else if (choice == 2){
-
+                ArrayList<ObjLendings> lendings =  DatabaseSystems.DisplayLendings(LoginSystems.getCurrentAccount().getAccountID());
+                printArrayList(lendings);
             }
             else if (choice == 3){
-
+                ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));
+                printArrayList(books);
             }
             else if (choice == 4){
-
+                SearchBooks();
             }
             else if (choice == 5){
 
@@ -84,17 +86,17 @@ public class AdminUserSystems {
             }
             else if (choice == 5){
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));
-                //print arraylist
+                printArrayList(books);
             }
             else if (choice == 6){
                 ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(0));
-                //print arraylist
+                printArrayList(accounts);
             }
             else if (choice == 7){
                 SearchBooks();
             }
             else if (choice == 8){
-                //SearchUsers();
+                SearchAccounts();
             }
             else if (choice == 9){
                 DatabaseSystems.AddBook(); // AddBook() is not currently functional
@@ -102,6 +104,12 @@ public class AdminUserSystems {
             else if (choice == 10){
                 valid = true;
             }
+        }
+    }
+
+    public static void printArrayList(ArrayList array){
+        for (int i = 0; i < array.size(); i++){
+            System.out.println(array.get(i).toString());
         }
     }
 
@@ -253,7 +261,8 @@ public class AdminUserSystems {
             else{
                 valid = true;
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(choice));
-                //print
+                books = sortBooks(books);
+                printArrayList(books);
             }
         }
     }
@@ -281,6 +290,8 @@ public class AdminUserSystems {
             else{
                 valid = true;
                 ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(choice));
+                accounts = sortAccounts(accounts);
+                printArrayList(accounts);
             }
         }
 

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 public class DatabaseSystems {
 
+
+
     public static void AmendInt(String table, String field, int ID, int amendment){
         try{
             Connection con = getConnection();
@@ -175,20 +177,20 @@ public class DatabaseSystems {
         return array;
     }
 
-    public static ArrayList<ObjLendings> DisplayLendings(){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
+    public static ArrayList<ObjLendings> DisplayLendings(int accountID){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
         ArrayList<ObjLendings> array = null;
         try{
-            Connection con = DriverManager.getConnection(""); // enter database
-            Statement stmt = con.createStatement();
+            Connection con = getConnection(); // enter database
 
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Lendings");
-            //add search
+            String sql = "SELECT * FROM Lendings, Books WHERE Lendings.ISBN = Books.ISBN AND Lendings.AccountID = "+accountID;
 
-            System.out.println("LendingID  |  AccountID  |  ISBN  |  DateLent  |  ReturnDate");
+            ResultSet rs = executeQuery(con,sql);
+
+            System.out.println("LendingID  |  ISBN  |  Title | Author | Genre | DatePublished |  DateLent  |  ReturnDate");
 
             while (rs.next()){
-                ObjLendings myLending = new ObjLendings(rs.getInt("LendingID"),rs.getInt("AccountID"),rs.getInt("DateLent"),rs.getDate("DateLent").toLocalDate(), rs.getDate("ReturnDate").toLocalDate());
-                array .add(myLending);
+                ObjLendings myLending = new ObjLendings(rs.getInt("LendingID"),rs.getInt("Books.ISBN"), rs.getString("Books.Title"), rs.getString("Books.Author"), rs.getString("Books.Genre"),rs.getDate("Books.DatePublished").toLocalDate(),rs.getDate("DateLent").toLocalDate(), rs.getDate("ReturnDate").toLocalDate());
+                array.add(myLending);
             }
         }
         catch(Exception e){
@@ -271,6 +273,53 @@ public class DatabaseSystems {
             }
             con.close();
             System.out.println("sign up successful");
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+    }
+
+    public static void BorrowBook(int accountID, int isbn){
+        try{
+            Connection con = getConnection();
+            ObjBook book = getBook(isbn);
+            if (book.getQuantityAvailable() > 0){
+                String sql = "SELECT Lendings.* FROM Lendings";
+                ResultSet rs = executeQuery(con,sql);
+
+                LocalDate currentDate = LocalDate.now();
+                LocalDate returndate = currentDate.plusMonths(1);
+
+                if (rs.next()){
+                    rs.moveToInsertRow();
+                    rs.updateInt("AccountID",accountID);
+                    rs.updateInt("ISBN",isbn);
+                    rs.updateDate("DateLent",Date.valueOf(currentDate));
+                    rs.updateDate("ReturnDate",Date.valueOf(returndate));
+                    rs.insertRow();
+                }
+                con.close();
+                int newQuantityAvailable = book.getQuantityAvailable() -1;
+                AmendInt("Books","QuantityAvailable",isbn,newQuantityAvailable);
+            }
+            else{
+                System.out.println("Not enough books in stock");
+            }
+        }
+        catch(Exception e){
+            System.out.println("Error "+e);
+        }
+    }
+
+    public static void returnBook(int isbn, int accountID){
+        try{
+            Connection con = getConnection();
+            String sql = "SELECT Lendings.*, Accounts.AccountID, Books.ISBN FROM Lendings, Accounts, Books WHERE Lendings.AccountID = Accounts.AccountID AND Lendings.ISBN = Books.ISBN AND Books.ISBN = "+isbn+" AND Accounts.AccountID = "+accountID;
+            ResultSet rs = executeQuery(con,sql);
+            if (rs.next()){
+                //delete selection
+            }
+            con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
