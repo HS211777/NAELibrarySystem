@@ -36,16 +36,16 @@ public class AdminUserSystems {
                 SearchBooks();
             }
             else if (choice == 5){
-
+                DatabaseSystems.BorrowBook(LoginSystems.getCurrentAccount().getAccountID(),InputSystems.InputInt("Enter ISBN: "));
             }
             else if (choice == 6){
-
+                DatabaseSystems.returnBook(InputSystems.InputInt("Enter ISBN: "),LoginSystems.getCurrentAccount().getAccountID());
             }
             else if (choice == 7){
-
+                DatabaseSystems.returnAll(LoginSystems.getCurrentAccount().getAccountID());
             }
             else if (choice == 8){
-
+                DatabaseSystems.DeleteAccount(LoginSystems.getCurrentAccount().getAccountID());
             }
             else if (choice == 9){
                 valid = true;
@@ -79,10 +79,10 @@ public class AdminUserSystems {
                 AmendUser();
             }
             else if (choice == 3){
-                //DeleteBook();
+                DatabaseSystems.DeleteBook(InputSystems.InputInt("Enter ISBN: "));
             }
             else if (choice == 4){
-                //DeleteUser();
+                DatabaseSystems.DeleteAccount(InputSystems.InputInt("Enter AccountID: "));
             }
             else if (choice == 5){
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));

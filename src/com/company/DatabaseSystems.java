@@ -107,19 +107,19 @@ public class DatabaseSystems {
             String sqladd = "";
             if (searchby == 1){
                 String search = InputSystems.InputString("Search: ");
-                sqladd = " WHERE Username LIKE '"+search+"'";
+                sqladd = " WHERE Username LIKE '%"+search+"%'";
             }
             else if (searchby == 2){
                 String search = InputSystems.InputString("Search: ");
-                sqladd = " WHERE FirstName LIKE '"+search+"'";
+                sqladd = " WHERE FirstName LIKE '%"+search+"%'";
             }
             else if (searchby == 3){
                 String search = InputSystems.InputString("Search: ");
-                sqladd = " WHERE LastName LIKE '"+search+"'";
+                sqladd = " WHERE LastName LIKE '%"+search+"%'";
             }
             else if (searchby == 4){
                 String search = InputSystems.InputString("Search: ");
-                sqladd = " WHERE Email LIKE '"+search+"'";
+                sqladd = " WHERE Email LIKE '%"+search+"%'";
             }
             else if (searchby == 5){
                 LocalDate search1 = InputSystems.InputDate();
@@ -139,7 +139,6 @@ public class DatabaseSystems {
             String sql = "SELECT * FROM Accounts";
             String sql1 = sql + sqladd;
             ResultSet rs = executeQuery(con,sql1);
-            //add search
 
             System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
 
@@ -155,14 +154,36 @@ public class DatabaseSystems {
         return array;
     }
 
-    public static ArrayList<ObjBook> DisplayBooks(int search){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
+    public static ArrayList<ObjBook> DisplayBooks(int searchby){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
         ArrayList<ObjBook> array = null;
         try{
-            Connection con = DriverManager.getConnection(""); // enter database
-            Statement stmt = con.createStatement();
+            Connection con = getConnection(); // enter database
+            String sqladd = "";
+            if (searchby == 1){
+                int search = InputSystems.InputInt("Search: ");
+                sqladd = " WHERE ISBN LIKE '%"+search+"%'";
+            }
+            else if (searchby == 2){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE Title Like '%"+search+"%'";
+            }
+            else if (searchby == 3){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE Author Like '%"+search+"%'";
+            }
+            else if (searchby == 4){
+                String search = InputSystems.InputString("Search: ");
+                sqladd = " WHERE Genre Like '%"+search+"%'";
+            }
+            else if (searchby == 5){
+                LocalDate search1 = InputSystems.InputDate();
+                Date search = Date.valueOf(search1);
+                sqladd = " WHERE DatePublished = "+search;
+            }
 
-            ResultSet rs = stmt.executeQuery("SELECT * FROM Books");
-            //add search
+            String sql = "SELECT * FROM Books";
+            String sql1 = sql + sqladd;
+            ResultSet rs = executeQuery(con,sql1);
 
             System.out.println("ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
 
@@ -172,7 +193,7 @@ public class DatabaseSystems {
             }
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
         return array;
     }
@@ -314,11 +335,9 @@ public class DatabaseSystems {
     public static void returnBook(int isbn, int accountID){
         try{
             Connection con = getConnection();
-            String sql = "SELECT Lendings.*, Accounts.AccountID, Books.ISBN FROM Lendings, Accounts, Books WHERE Lendings.AccountID = Accounts.AccountID AND Lendings.ISBN = Books.ISBN AND Books.ISBN = "+isbn+" AND Accounts.AccountID = "+accountID;
+            String sql = "DELETE FROM Lendings WHERE ISBN = "+isbn+" AND AccountID = "+accountID;
             ResultSet rs = executeQuery(con,sql);
-            if (rs.next()){
-                //delete selection
-            }
+            rs.next();
             con.close();
         }
         catch (Exception e){
@@ -326,8 +345,39 @@ public class DatabaseSystems {
         }
     }
 
-    public static void AddBook(){
+    public static void returnAll(int accountID){
+        try{
+            ArrayList<ObjLendings> array = DisplayLendings(accountID);
+            for (int i = 0; i < array.size(); i++){
+                int isbn = array.get(i).getISBN();
+                returnBook(isbn,accountID);
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+    }
 
+    public static void AddBook(){
+        try{
+            Connection con = getConnection();
+            String sql = "SELECT * FROM Books";
+            ResultSet rs = executeQuery(con,sql);
+            if(rs.next()){
+                rs.moveToInsertRow();
+                rs.updateString("Title",InputSystems.InputString("Title: "));
+                rs.updateString("Author", InputSystems.InputString("Author: "));
+                rs.updateString("Genre",InputSystems.InputString("Genre: "));
+                int quantity = InputSystems.InputInt("Quantity: ");
+                rs.updateInt("Quantity",quantity);
+                rs.updateInt("QuantityAvailable",quantity);
+                rs.updateDate("DatePublished",Date.valueOf(InputSystems.InputDate()));
+                rs.insertRow();
+            }
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
     }
 
     public static int checkLogin(String username, int password){
@@ -338,7 +388,7 @@ public class DatabaseSystems {
             ResultSet rs = executeQuery(con, sql);
 
             while(rs.next()){
-                if (username.equals(rs.getString("Username")) || password == rs.getInt("Password")){
+                if (username.equals(rs.getString("Username")) && password == rs.getInt("Password")){
                     out = rs.getInt("AccountID");
                     break;
                 }
@@ -348,6 +398,40 @@ public class DatabaseSystems {
             System.out.println("Error "+e);
         }
         return out;
+    }
+
+    public static void DeleteBook(int isbn){
+        try{
+            Connection con = getConnection();
+            String sql = "DELETE FROM Lendings WHERE ISBN = "+isbn;
+            ResultSet rs1 = executeQuery(con,sql);
+            while (rs1.next()){
+
+            }
+
+            sql = "DELETE FROM Books WHERE ISBN = "+isbn;
+            ResultSet rs = executeQuery(con,sql);
+            rs.next();
+
+            con.close();
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
+    }
+
+    public static void DeleteAccount(int AccountID){
+        returnAll(AccountID);
+        try{
+            Connection con = getConnection();
+            String sql = "DELETE FROM Accounts WHERE AccountID = "+AccountID;
+            ResultSet rs = executeQuery(con, sql);
+            rs.next();
+            con.close();
+        }
+        catch (Exception e){
+            System.out.println("Error "+e);
+        }
     }
 
     // Julie's code bellow
