@@ -26,11 +26,11 @@ public class AdminUserSystems {
             }
             else if (choice == 2){
                 ArrayList<ObjLendings> lendings =  DatabaseSystems.DisplayLendings(LoginSystems.getCurrentAccount().getAccountID());
-                printArrayList(lendings);
+                printArrayList(lendings, "LendingID  |  ISBN  |  Title | Author | Genre | DatePublished |  DateLent  |  ReturnDate");
             }
             else if (choice == 3){
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));
-                printArrayList(books);
+                printArrayList(books, "ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
             }
             else if (choice == 4){
                 SearchBooks();
@@ -46,6 +46,7 @@ public class AdminUserSystems {
             }
             else if (choice == 8){
                 DatabaseSystems.DeleteAccount(LoginSystems.getCurrentAccount().getAccountID());
+                valid = true;
             }
             else if (choice == 9){
                 valid = true;
@@ -86,11 +87,11 @@ public class AdminUserSystems {
             }
             else if (choice == 5){
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(0));
-                printArrayList(books);
+                printArrayList(books, "ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
             }
             else if (choice == 6){
                 ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(0));
-                printArrayList(accounts);
+                printArrayList(accounts, "AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
             }
             else if (choice == 7){
                 SearchBooks();
@@ -107,7 +108,8 @@ public class AdminUserSystems {
         }
     }
 
-    public static void printArrayList(ArrayList array){
+    public static void printArrayList(ArrayList array, String heading){
+        System.out.println(heading);
         for (int i = 0; i < array.size(); i++){
             System.out.println(array.get(i).toString());
         }
@@ -262,7 +264,7 @@ public class AdminUserSystems {
                 valid = true;
                 ArrayList<ObjBook> books = sortBooks(DatabaseSystems.DisplayBooks(choice));
                 books = sortBooks(books);
-                printArrayList(books);
+                printArrayList(books, "ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
             }
         }
     }
@@ -291,7 +293,7 @@ public class AdminUserSystems {
                 valid = true;
                 ArrayList<ObjAccount> accounts = sortAccounts(DatabaseSystems.DisplayAccounts(choice));
                 accounts = sortAccounts(accounts);
-                printArrayList(accounts);
+                printArrayList(accounts, "AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
             }
         }
 
@@ -333,7 +335,7 @@ public class AdminUserSystems {
         return resultArray;
     }
 
-    public static ArrayList<ObjBook> sortBooks(ArrayList<ObjBook> unsorted){
+    public static ArrayList<ObjBook> sortBooks(ArrayList<ObjBook> unsorted){ //breaks is unsorted is null
         if (unsorted.size() <= 1){
             return unsorted;
         }

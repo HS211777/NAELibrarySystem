@@ -66,6 +66,7 @@ public class LoginSystems {
             }
             valid = true;
         }
+        Login();
     }
 
     public static ObjAccount getCurrentAccount(){

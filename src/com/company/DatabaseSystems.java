@@ -18,16 +18,11 @@ public class DatabaseSystems {
             else if (table.equalsIgnoreCase("Accounts")){
                 sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
             }
-            else{
-
-            }
-            ResultSet rs = executeQuery(con,sql);
-            if (rs.next()){
-            }
-            //finish
+            executeUpdateQuery(con,sql);
+            con.close();
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
     }
 
@@ -41,16 +36,12 @@ public class DatabaseSystems {
             else if (table.equalsIgnoreCase("Accounts")){
                 sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
             }
-            else{
+            executeUpdateQuery(con,sql);
 
-            }
-            ResultSet rs = executeQuery(con,sql);
-            if (rs.next()){
-            }
-            //finish
+            con.close();
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
     }
 
@@ -64,16 +55,13 @@ public class DatabaseSystems {
             else if (table.equalsIgnoreCase("Accounts")){
                 sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
             }
-            else{
 
-            }
-            ResultSet rs = executeQuery(con,sql);
-            if (rs.next()){
-            }
-            //finish
+            executeUpdateQuery(con,sql);
+
+            con.close();
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
     }
 
@@ -87,16 +75,13 @@ public class DatabaseSystems {
             else if (table.equalsIgnoreCase("Accounts")){
                 sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
             }
-            else{
 
-            }
-            ResultSet rs = executeQuery(con,sql);
-            if (rs.next()){
-            }
-            //finish
+            executeUpdateQuery(con,sql);
+
+            con.close();
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
     }
 
@@ -140,16 +125,18 @@ public class DatabaseSystems {
             String sql1 = sql + sqladd;
             ResultSet rs = executeQuery(con,sql1);
 
-            System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
+            //System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
 
             while (rs.next()){
                 ObjAccount myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Email"), rs.getDate("DateOfBirth#").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"),rs.getInt("AccountID"));
-                array.add(myAccount);
+                array.add(myAccount); //produces null pointer exception
             }
+            rs.close();
+            con.close();
 
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
         return array;
     }
@@ -185,12 +172,14 @@ public class DatabaseSystems {
             String sql1 = sql + sqladd;
             ResultSet rs = executeQuery(con,sql1);
 
-            System.out.println("ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
+            //System.out.println("ISBN  |  Title  |  Author  |  Genre  |  Quantity  |  QuantityAvailable  |  DatePublished");
 
             while (rs.next()){
                 ObjBook myBook = new ObjBook(rs.getInt("ISBN"),rs.getString("Title"),rs.getString("Author"),rs.getString("Genre"),rs.getInt("Quantity"),rs.getInt("QuantityAvailable"),rs.getDate("DatePublished").toLocalDate());
-                array.add(myBook);
+                array.add(myBook); // produces null pointer exception
             }
+            rs.close();
+            con.close();
         }
         catch(Exception e){
             System.out.println("Error "+e);
@@ -207,15 +196,17 @@ public class DatabaseSystems {
 
             ResultSet rs = executeQuery(con,sql);
 
-            System.out.println("LendingID  |  ISBN  |  Title | Author | Genre | DatePublished |  DateLent  |  ReturnDate");
+            //System.out.println("LendingID  |  ISBN  |  Title | Author | Genre | DatePublished |  DateLent  |  ReturnDate");
 
             while (rs.next()){
                 ObjLendings myLending = new ObjLendings(rs.getInt("LendingID"),rs.getInt("Books.ISBN"), rs.getString("Books.Title"), rs.getString("Books.Author"), rs.getString("Books.Genre"),rs.getDate("Books.DatePublished").toLocalDate(),rs.getDate("DateLent").toLocalDate(), rs.getDate("ReturnDate").toLocalDate());
                 array.add(myLending);
             }
+            rs.close();
+            con.close();
         }
         catch(Exception e){
-
+            System.out.println("Error "+e);
         }
         return array;
     }
@@ -234,7 +225,7 @@ public class DatabaseSystems {
             con.close();
         }
         catch (Exception e){
-
+            System.out.println("Error "+e);
         }
         return myBook;
     }
@@ -249,6 +240,8 @@ public class DatabaseSystems {
             if (rs.next()){
                 myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"),rs.getString("LastName"),rs.getString("Email"), rs.getDate("DateOfBirth").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"), rs.getInt("AccountID"));
             }
+            rs.close();
+            con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
@@ -268,6 +261,8 @@ public class DatabaseSystems {
                     valid = false;
                 }
             }
+            rs.close();
+            con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
@@ -292,6 +287,7 @@ public class DatabaseSystems {
                 rs.updateBoolean("Admin",admin);
                 rs.insertRow();
             }
+            rs.close();
             con.close();
             System.out.println("sign up successful");
         }
@@ -319,6 +315,7 @@ public class DatabaseSystems {
                     rs.updateDate("ReturnDate",Date.valueOf(returndate));
                     rs.insertRow();
                 }
+                rs.close();
                 con.close();
                 int newQuantityAvailable = book.getQuantityAvailable() -1;
                 AmendInt("Books","QuantityAvailable",isbn,newQuantityAvailable);
@@ -336,8 +333,8 @@ public class DatabaseSystems {
         try{
             Connection con = getConnection();
             String sql = "DELETE FROM Lendings WHERE ISBN = "+isbn+" AND AccountID = "+accountID;
-            ResultSet rs = executeQuery(con,sql);
-            rs.next();
+            executeUpdateQuery(con,sql);
+
             con.close();
         }
         catch (Exception e){
@@ -358,10 +355,10 @@ public class DatabaseSystems {
         }
     }
 
-    public static void AddBook(){
+    public static void AddBook(){ //not working
         try{
             Connection con = getConnection();
-            String sql = "SELECT * FROM Books";
+            String sql = "SELECT Books.* FROM Books";
             ResultSet rs = executeQuery(con,sql);
             if(rs.next()){
                 rs.moveToInsertRow();
@@ -374,6 +371,8 @@ public class DatabaseSystems {
                 rs.updateDate("DatePublished",Date.valueOf(InputSystems.InputDate()));
                 rs.insertRow();
             }
+            rs.close();
+            con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
@@ -393,6 +392,8 @@ public class DatabaseSystems {
                     break;
                 }
             }
+            rs.close();
+            con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
@@ -404,14 +405,10 @@ public class DatabaseSystems {
         try{
             Connection con = getConnection();
             String sql = "DELETE FROM Lendings WHERE ISBN = "+isbn;
-            ResultSet rs1 = executeQuery(con,sql);
-            while (rs1.next()){
-
-            }
+            executeUpdateQuery(con,sql);
 
             sql = "DELETE FROM Books WHERE ISBN = "+isbn;
-            ResultSet rs = executeQuery(con,sql);
-            rs.next();
+            executeUpdateQuery(con,sql);
 
             con.close();
         }
@@ -425,9 +422,9 @@ public class DatabaseSystems {
         try{
             Connection con = getConnection();
             String sql = "DELETE FROM Accounts WHERE AccountID = "+AccountID;
-            ResultSet rs = executeQuery(con, sql);
-            rs.next();
-            con.close();
+            executeUpdateQuery(con, sql);
+
+            //con.close();
         }
         catch (Exception e){
             System.out.println("Error "+e);
