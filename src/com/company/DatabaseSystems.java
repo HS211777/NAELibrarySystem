@@ -31,10 +31,10 @@ public class DatabaseSystems {
             Connection con = getConnection();
             String sql = "";
             if (table.equalsIgnoreCase("Books")){
-                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+                sql = "UPDATE Books SET "+field+" = '"+amendment+"' WHERE ISBN = "+ID;
             }
             else if (table.equalsIgnoreCase("Accounts")){
-                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+                sql = "UPDATE Accounts SET "+field+" = '"+amendment+"' WHERE AccountID = "+ID;
             }
             executeUpdateQuery(con,sql);
 
@@ -50,10 +50,10 @@ public class DatabaseSystems {
             Connection con = getConnection();
             String sql = "";
             if (table.equalsIgnoreCase("Books")){
-                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+                sql = "UPDATE Books SET "+field+" = '"+amendment+"' WHERE ISBN = "+ID;
             }
             else if (table.equalsIgnoreCase("Accounts")){
-                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+                sql = "UPDATE Accounts SET "+field+" = '"+amendment+"' WHERE AccountID = "+ID;
             }
 
             executeUpdateQuery(con,sql);
@@ -67,13 +67,14 @@ public class DatabaseSystems {
 
     public static void AmendDate(String table, String field,int ID, LocalDate amendment){
         try{
+            Date amendment1 = Date.valueOf(amendment);
             Connection con = getConnection();
             String sql = "";
             if (table.equalsIgnoreCase("Books")){
-                sql = "UPDATE Books SET "+field+" = "+amendment+" WHERE ISBN = "+ID;
+                sql = "UPDATE Books SET "+field+" = '"+amendment1+"' WHERE ISBN = "+ID;
             }
             else if (table.equalsIgnoreCase("Accounts")){
-                sql = "UPDATE Accounts SET "+field+" = "+amendment+" WHERE AccountID = "+ID;
+                sql = "UPDATE Accounts SET "+field+" = '"+amendment1+"' WHERE AccountID = "+ID;
             }
 
             executeUpdateQuery(con,sql);
@@ -86,7 +87,7 @@ public class DatabaseSystems {
     }
 
     public static ArrayList<ObjAccount> DisplayAccounts(int searchby){ // 0 = no search, 1 = Username, 2 = FirstName, 3 = LastName, 4 = Email, 5 = DateOfBirth, 6  = DateCreated, 7 = Admin
-        ArrayList<ObjAccount> array = null;
+        ArrayList<ObjAccount> array = new ArrayList<>();
         try{
             Connection con = getConnection();
             String sqladd = "";
@@ -128,7 +129,7 @@ public class DatabaseSystems {
             //System.out.println("AccountID  |  UserName  |  Password  |  FirstName  |  LastName  |  Email  |  DateOfBirth  |  DateCreated  |  Admin");
 
             while (rs.next()){
-                ObjAccount myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Email"), rs.getDate("DateOfBirth#").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"),rs.getInt("AccountID"));
+                ObjAccount myAccount = new ObjAccount(rs.getString("Username"), rs.getInt("Password"), rs.getString("FirstName"), rs.getString("LastName"), rs.getString("Email"), rs.getDate("DateOfBirth").toLocalDate(),rs.getDate("DateCreated").toLocalDate(),rs.getBoolean("Admin"),rs.getInt("AccountID"));
                 array.add(myAccount); //produces null pointer exception
             }
             rs.close();
@@ -142,27 +143,23 @@ public class DatabaseSystems {
     }
 
     public static ArrayList<ObjBook> DisplayBooks(int searchby){ //0 = no search, 1 = ISBN, 2 = Title, 3 = Author, 4 = Genre, 5 = DatePublished
-        ArrayList<ObjBook> array = null;
+        ArrayList<ObjBook> array = new ArrayList<>();
         try{
-            Connection con = getConnection(); // enter database
+            Connection con = getConnection();
             String sqladd = "";
             if (searchby == 1){
-                int search = InputSystems.InputInt("Search: ");
-                sqladd = " WHERE ISBN LIKE '%"+search+"%'";
-            }
-            else if (searchby == 2){
                 String search = InputSystems.InputString("Search: ");
                 sqladd = " WHERE Title Like '%"+search+"%'";
             }
-            else if (searchby == 3){
+            else if (searchby == 2){
                 String search = InputSystems.InputString("Search: ");
                 sqladd = " WHERE Author Like '%"+search+"%'";
             }
-            else if (searchby == 4){
+            else if (searchby == 3){
                 String search = InputSystems.InputString("Search: ");
                 sqladd = " WHERE Genre Like '%"+search+"%'";
             }
-            else if (searchby == 5){
+            else if (searchby == 4){
                 LocalDate search1 = InputSystems.InputDate();
                 Date search = Date.valueOf(search1);
                 sqladd = " WHERE DatePublished = "+search;
@@ -188,11 +185,11 @@ public class DatabaseSystems {
     }
 
     public static ArrayList<ObjLendings> DisplayLendings(int accountID){ // 0 = no search, 1 = LendingID, 2 = AccountID, 3 = ISBN, 4 = DateLent, 5 = ReturnDate
-        ArrayList<ObjLendings> array = null;
+        ArrayList<ObjLendings> array = new ArrayList<>();
         try{
             Connection con = getConnection(); // enter database
 
-            String sql = "SELECT * FROM Lendings, Books WHERE Lendings.ISBN = Books.ISBN AND Lendings.AccountID = "+accountID;
+            String sql = "SELECT Lendings.*, Books.* FROM Lendings, Books WHERE Lendings.ISBN = Books.ISBN AND Lendings.AccountID = "+accountID;
 
             ResultSet rs = executeQuery(con,sql);
 
@@ -335,6 +332,17 @@ public class DatabaseSystems {
             String sql = "DELETE FROM Lendings WHERE ISBN = "+isbn+" AND AccountID = "+accountID;
             executeUpdateQuery(con,sql);
 
+            sql = "SELECT QuantityAvailable FROM Books WHERE ISBN = "+isbn;
+            ResultSet rs = executeQuery(con, sql);
+            int quantityAvaiable = 0;
+            if (rs.next()){
+                quantityAvaiable = rs.getInt("QuantityAvailable") + 1;
+            }
+            rs.close();
+
+            sql = "UPDATE Books SET QuantityAvailable = "+quantityAvaiable+" WHERE ISBN = "+isbn;
+            executeUpdateQuery(con, sql);
+
             con.close();
         }
         catch (Exception e){
@@ -355,7 +363,7 @@ public class DatabaseSystems {
         }
     }
 
-    public static void AddBook(){ //not working
+    public static void AddBook(){
         try{
             Connection con = getConnection();
             String sql = "SELECT Books.* FROM Books";
@@ -373,6 +381,7 @@ public class DatabaseSystems {
             }
             rs.close();
             con.close();
+            System.out.println("book add successful");
         }
         catch (Exception e){
             System.out.println("Error "+e);

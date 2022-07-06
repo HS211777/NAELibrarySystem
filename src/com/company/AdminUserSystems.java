@@ -151,7 +151,7 @@ public class AdminUserSystems {
             else if (choice1 == 5){
                 valid = true;
                 LocalDate amendment = InputSystems.InputDate();
-                DatabaseSystems.AmendDate("Books","QuantityAvailable",isbn,amendment);
+                DatabaseSystems.AmendDate("Books","DatePublished",isbn,amendment);
             }
             else if (choice1 == 6){
                 valid = true;
@@ -232,7 +232,7 @@ public class AdminUserSystems {
                 valid = true;
                 if (currentAccount.isAdmin()){
                     boolean admin = InputSystems.InputBoolean("Enter Amendment (1 = admin, 0 = user): ");
-                    DatabaseSystems.AmendBoolean("Accounts","Email",ID,admin);
+                    DatabaseSystems.AmendBoolean("Accounts","Admin",ID,admin);
                 }
             }
             else if (choice1 == 8){
@@ -274,11 +274,11 @@ public class AdminUserSystems {
         while (!valid){
             System.out.println("   --Field--");
             System.out.println("1 - Username");
-            System.out.println("2 - Password");
-            System.out.println("3 - First Name");
-            System.out.println("4 - Last Name");
+            System.out.println("2 - First Name");
+            System.out.println("3 - Last Name");
+            System.out.println("4 - Email");
             System.out.println("5 - Date of Birth");
-            System.out.println("6 - Email");
+            System.out.println("6 - Date Created");
             System.out.println("7 - Admin ");
             System.out.println("8 - Back");
 
@@ -305,11 +305,11 @@ public class AdminUserSystems {
             return unsorted;
         }
         int mid = (int) Math.floor(unsorted.size()/2);
-        ArrayList<ObjAccount> left = null;
+        ArrayList<ObjAccount> left = new ArrayList<>();
         for (int i = 0; i < mid; i++){
             left.add(unsorted.get(i));
         }
-        ArrayList<ObjAccount> right = null;
+        ArrayList<ObjAccount> right = new ArrayList<>();
         for (int i = mid; i < unsorted.size(); i++){
             right.add(unsorted.get(i));
         }
@@ -317,34 +317,32 @@ public class AdminUserSystems {
     }
 
     public static ArrayList<ObjAccount> mergeAccounts(ArrayList<ObjAccount> left, ArrayList<ObjAccount> right){
-        ArrayList<ObjAccount> resultArray = null;
-        int leftIndex = 0;
-        int rightIndex = 0;
+        ArrayList<ObjAccount> resultArray = new ArrayList<>();
 
-        while(leftIndex < left.size() && rightIndex < right.size()){
-            if(left.get(leftIndex).getAccountID() < right.get(rightIndex).getAccountID()){
-                resultArray.add(left.get(leftIndex));
-                leftIndex++;
+        while(left.size() > 0 || right.size() > 0){
+            if(left.size() != 0 && left.get(0).getAccountID() < right.get(0).getAccountID()){
+                resultArray.add(left.get(0));
+                left.remove(0);
             }
             else{
-                resultArray.add(right.get(rightIndex));
-                rightIndex++;
+                resultArray.add(right.get(0));
+                right.remove(0);
             }
         }
 
         return resultArray;
     }
 
-    public static ArrayList<ObjBook> sortBooks(ArrayList<ObjBook> unsorted){ //breaks is unsorted is null
+    public static ArrayList<ObjBook> sortBooks(ArrayList<ObjBook> unsorted){
         if (unsorted.size() <= 1){
             return unsorted;
         }
         int mid = (int) Math.floor(unsorted.size()/2);
-        ArrayList<ObjBook> left = null;
+        ArrayList<ObjBook> left = new ArrayList<>();
         for (int i = 0; i < mid; i++){
             left.add(unsorted.get(i));
         }
-        ArrayList<ObjBook> right = null;
+        ArrayList<ObjBook> right = new ArrayList<>();
         for (int i = mid; i < unsorted.size(); i++){
             right.add(unsorted.get(i));
         }
@@ -352,18 +350,17 @@ public class AdminUserSystems {
     }
 
     public static ArrayList<ObjBook> mergeBooks(ArrayList<ObjBook> left, ArrayList<ObjBook> right){
-        ArrayList<ObjBook> resultArray = null;
-        int leftIndex = 0;
-        int rightIndex = 0;
+        ArrayList<ObjBook> resultArray = new ArrayList<>();
 
-        while(leftIndex < left.size() && rightIndex < right.size()){
-            if(left.get(leftIndex).getISBN() < right.get(rightIndex).getISBN()){
-                resultArray.add(left.get(leftIndex));
-                leftIndex++;
+
+        while(left.size() > 0 || right.size() > 0){
+            if( left.size() > 0 && left.get(0).getISBN() < right.get(0).getISBN()){
+                resultArray.add(left.get(0));
+                left.remove(0);
             }
             else{
-                resultArray.add(right.get(rightIndex));
-                rightIndex++;
+                resultArray.add(right.get(0));
+                right.remove(0);
             }
         }
 
@@ -375,11 +372,11 @@ public class AdminUserSystems {
             return unsorted;
         }
         int mid = (int) Math.floor(unsorted.size()/2);
-        ArrayList<ObjLendings> left = null;
+        ArrayList<ObjLendings> left = new ArrayList<>();
         for (int i = 0; i < mid; i++){
             left.add(unsorted.get(i));
         }
-        ArrayList<ObjLendings> right = null;
+        ArrayList<ObjLendings> right = new ArrayList<>();
         for (int i = mid; i < unsorted.size(); i++){
             right.add(unsorted.get(i));
         }
@@ -387,18 +384,16 @@ public class AdminUserSystems {
     }
 
     public static ArrayList<ObjLendings> mergeLendings(ArrayList<ObjLendings> left, ArrayList<ObjLendings> right){
-        ArrayList<ObjLendings> resultArray = null;
-        int leftIndex = 0;
-        int rightIndex = 0;
+        ArrayList<ObjLendings> resultArray = new ArrayList<>();
 
-        while(leftIndex < left.size() && rightIndex < right.size()){
-            if(left.get(leftIndex).getLendingID() < right.get(rightIndex).getLendingID()){
-                resultArray.add(left.get(leftIndex));
-                leftIndex++;
+        while(left.size() > 0 || right.size() > 0){
+            if(left.size() > 0 && left.get(0).getLendingID() < right.get(0).getLendingID()){
+                resultArray.add(left.get(0));
+                left.remove(0);
             }
             else{
-                resultArray.add(right.get(rightIndex));
-                rightIndex++;
+                resultArray.add(right.get(0));
+                left.remove(0);
             }
         }
 
