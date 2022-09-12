@@ -1,6 +1,7 @@
 package com.company;
 
 import java.time.LocalDate;
+//import org.apache.commons.validator.routines.EmailValidator; //explain you tried this in your written section
 
 public class LoginSystems {
     private static ObjAccount currentAccount;
@@ -60,11 +61,25 @@ public class LoginSystems {
                 int hashpassword = password.hashCode();
                 if (DatabaseSystems.CheckUsernameAvailable(username)){
                     if (dateOfBirth.isBefore(LocalDate.now())){
-                        DatabaseSystems.AddUser(username,hashpassword,firstName,lastName,dateOfBirth,email,dateCreated,false);
+                        if (EmailSystems.validateEmail(email)){
+                            DatabaseSystems.AddUser(username,hashpassword,firstName,lastName,dateOfBirth,email,dateCreated,false);
+                            valid = true;
+                        }
+                        else{
+                            System.out.println("Email is invalid, please try again");
+                        }
+                    }
+                    else {
+                        System.out.println("Date of birth is in the future, please try again");
                     }
                 }
+                else {
+                    System.out.println("That username is not available, please try again");
+                }
             }
-            valid = true;
+            else {
+                System.out.println("Password and confirm password do not match, please try again");
+            }
         }
         Login();
     }
@@ -72,4 +87,5 @@ public class LoginSystems {
     public static ObjAccount getCurrentAccount(){
         return currentAccount;
     }
+
 }
