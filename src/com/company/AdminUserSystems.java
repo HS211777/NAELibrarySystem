@@ -5,7 +5,7 @@ import javafx.util.converter.LocalDateStringConverter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-public class AdminUserSystems {
+public class AdminUserSystems { //this class contains mostly menus that link to other methods for both users and admins as well as merge sorting algorithms
 
     public static void UserMenu(){
         boolean valid = false;
@@ -367,7 +367,7 @@ public class AdminUserSystems {
         return resultArray;
     }
 
-    public static ArrayList<ObjLendings> sortLendings(ArrayList<ObjLendings> unsorted){
+    public static ArrayList<ObjLendings> sortLendings(ArrayList<ObjLendings> unsorted){ //there is no search associated with lendings so i did not need to code this part
         if (unsorted.size() <= 1){
             return unsorted;
         }

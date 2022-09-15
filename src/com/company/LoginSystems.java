@@ -53,10 +53,8 @@ public class LoginSystems {
             String lastName = InputSystems.InputString("Enter your Last name");
             String email = InputSystems.InputString("Enter your Email Address");
             LocalDate dateCreated = LocalDate.now();
-            int year = InputSystems.InputInt("Enter the year of your birth");
-            int month = InputSystems.InputInt("Enter the month (1-12) of your birth");
-            int day = InputSystems.InputInt("Enter the day (1-31) of your birth");
-            LocalDate dateOfBirth = LocalDate.of(year,month,day);
+            System.out.println("Enter your date of birth:");
+            LocalDate dateOfBirth = InputSystems.InputDate();
             if (password.equals(confPassword)){
                 int hashpassword = password.hashCode();
                 if (DatabaseSystems.CheckUsernameAvailable(username)){
