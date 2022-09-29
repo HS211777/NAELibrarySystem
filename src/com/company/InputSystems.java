@@ -16,6 +16,7 @@ public class InputSystems { //this class contains methods for inputs utilising t
             }
             catch (Exception e){
                 System.out.println("Error "+e);
+                System.out.println("please try again");
                 input.next();
             }
         }
@@ -34,6 +35,7 @@ public class InputSystems { //this class contains methods for inputs utilising t
             }
             catch (Exception e){
                 System.out.println("Error "+e);
+                System.out.println("please try again");
                 input.next();
             }
         }

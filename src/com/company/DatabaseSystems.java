@@ -440,7 +440,7 @@ public class DatabaseSystems { //this class contains all of my SQL code
         }
     }
 
-    // Julie's code bellow
+    // Teacher's code bellow
 
     //returns a connection to the database
     public static Connection getConnection() {
