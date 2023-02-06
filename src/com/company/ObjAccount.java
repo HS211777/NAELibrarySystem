@@ -13,7 +13,7 @@ public class ObjAccount {
     private boolean admin;
     private int accountID;
 
-    public ObjAccount(String username, int password, String firstName, String lastName, String email, LocalDate dateOfBirth, LocalDate dateCreated, boolean admin, int accuntID) {
+    public ObjAccount(String username, int password, String firstName, String lastName, String email, LocalDate dateOfBirth, LocalDate dateCreated, boolean admin, int accountID) {
         this.username = username;
         this.password = password;
         this.firstName = firstName;
@@ -22,7 +22,7 @@ public class ObjAccount {
         this.dateOfBirth = dateOfBirth;
         this.dateCreated = dateCreated;
         this.admin = admin;
-        this.accountID = accuntID;
+        this.accountID = accountID;
     }
 
     @Override

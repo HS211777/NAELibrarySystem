@@ -321,7 +321,7 @@ public class AdminUserSystems { //this class contains mostly menus that link to 
         ArrayList<ObjAccount> resultArray = new ArrayList<>();
 
         while(left.size() > 0 || right.size() > 0){
-            if(left.size() != 0 && left.get(0).getAccountID() < right.get(0).getAccountID()){
+            if((left.size() != 0) && (left.get(0).getAccountID() < right.get(0).getAccountID())){
                 resultArray.add(left.get(0));
                 left.remove(0);
             }
