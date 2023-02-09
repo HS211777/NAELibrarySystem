@@ -12,7 +12,9 @@ public class InputSystems { //this class contains methods for inputs utilising t
         while (!valid){
             try{
                 out = input.nextInt();
-                valid = true;
+                if (out >= 0){
+                    valid = true;
+                }
             }
             catch (Exception e){
                 System.out.println("Error "+e);
